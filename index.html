@@ -70,12 +70,12 @@ footer{text-align:center;color:#777;font-size:12px;margin-top:45px}
 </header>
 
 <main>
-<label id="dropzone">
+<div id="dropzone" role="button" tabindex="0" aria-label="اختيار صورة">
 <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
 <div class="main-txt">اسحب الصورة هنا أو اضغط للاختيار</div>
 <div class="sub-txt">JPG · PNG · WebP — المعالجة محلية ولا تُرفع الصورة إلى سيرفر</div>
-<input id="fileInput" type="file" accept="image/*">
-</label>
+<input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,image/*">
+</div>
 <div id="loadError" class="error hidden"></div>
 
 <section id="workspace" class="workspace">
@@ -206,7 +206,11 @@ Object.entries(LOOKS).forEach(([key,l])=>{
 });
 
 function loadFile(file){
- if(!file?.type?.startsWith("image/")){showError("اختر ملف صورة صالح.");return}
+ if(!file){return}
+ if(!(file.type?.startsWith("image/") || /\\.(jpe?g|png|webp|heic|heif)$/i.test(file.name))){
+   showError("اختر ملف صورة صالح (JPG أو PNG أو WebP).");
+   return;
+ }
  const url=URL.createObjectURL(file);const im=new Image();
  im.onload=()=>{URL.revokeObjectURL(url);img=im;W=im.naturalWidth;H=im.naturalHeight;
    const max=1800, s=Math.min(1,max/W);const pw=Math.round(W*s),ph=Math.round(H*s);
@@ -214,7 +218,7 @@ function loadFile(file){
    sourceData=cb.getImageData(0,0,pw,ph);workspace.classList.add("active");dropzone.classList.add("hidden");
    $("imageInfo").textContent=`${W} × ${H}px`;wrap.style.width="100%";setSplit(50);render();
  };
- im.onerror=()=>showError("تعذر فتح الصورة.");
+ im.onerror=()=>showError("تعذر فتح هذه الصورة في المتصفح. إذا كانت HEIC/HEIF من الآيفون، جرّب JPG أو PNG.");
  im.src=url;
 }
 function showError(s){$("loadError").textContent=s;$("loadError").classList.remove("hidden")}
@@ -222,8 +226,18 @@ function showError(s){$("loadError").textContent=s;$("loadError").classList.remo
 dropzone.addEventListener("dragover",e=>{e.preventDefault();dropzone.classList.add("drag")});
 dropzone.addEventListener("dragleave",()=>dropzone.classList.remove("drag"));
 dropzone.addEventListener("drop",e=>{e.preventDefault();dropzone.classList.remove("drag");loadFile(e.dataTransfer.files[0])});
-fileInput.addEventListener("change",e=>loadFile(e.target.files[0]));
-dropzone.addEventListener("click",()=>fileInput.click());
+fileInput.addEventListener("change",e=>{
+  const file=e.target.files && e.target.files[0];
+  if(file) loadFile(file);
+  e.target.value="";
+});
+dropzone.addEventListener("click",(e)=>{
+  // The input is visually hidden; explicitly opening it works more reliably on iOS/Android.
+  if(e.target!==fileInput) fileInput.click();
+});
+dropzone.addEventListener("keydown",(e)=>{
+  if(e.key==="Enter" || e.key===" ") { e.preventDefault(); fileInput.click(); }
+});
 
 function boxBlur(plane,w,h,r){
  const rad=Math.max(1,Math.round(r)),tmp=new Float32Array(plane.length),out=new Float32Array(plane.length);
