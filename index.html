@@ -60,6 +60,132 @@ details{border-top:1px solid var(--line);padding-top:14px;margin-top:15px}detail
 footer{text-align:center;color:#777;font-size:12px;margin-top:45px}
 @media(max-width:900px){.grid{grid-template-columns:1fr}.looks{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:560px){header{padding-top:24px}.topbar{align-items:flex-start}.looks{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:90px 1fr 32px}.toolbar{display:block}.toolbar-group{margin-bottom:8px}.btn{padding:9px 11px}}
+
+/* ===== GHUROUB Mobile Lightroom-style workspace ===== */
+@media (max-width:560px){
+  body{padding-bottom:0}
+  /* Once a photo is loaded, give the editor the whole screen. */
+  body:has(#workspace.active) header,
+  body:has(#workspace.active) #dropzone,
+  body:has(#workspace.active) #loadError{display:none!important}
+  main{padding:0 10px}
+  #workspace.active{padding-top:0}
+
+  .toolbar{
+    display:none!important;
+  }
+
+  /* The photo stays pinned while the user scrolls through adjustments. */
+  #compareWrap{
+    position:sticky;
+    top:0;
+    z-index:100;
+    height:min(46vh,430px);
+    min-height:250px;
+    width:100%;
+    margin:0 -0px 0;
+    border-radius:0 0 12px 12px;
+    border-left:0;border-right:0;
+    background:#050505;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 24px rgba(0,0,0,.45);
+  }
+  #compareWrap > #canvasBefore{
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain;
+  }
+  #canvasAfterWrap{
+    inset:0!important;
+    width:50%;
+    height:100%;
+  }
+  #canvasAfterWrap canvas{
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain;
+    left:0!important;
+    top:0!important;
+  }
+  #handle:after{width:34px;height:34px;font-size:13px}
+  .tag{bottom:8px;font-size:9px;padding:5px 7px}
+
+  .viewer-tools{
+    position:sticky;
+    top:min(46vh,430px);
+    z-index:99;
+    margin:0 -0px 10px;
+    padding:8px 0;
+    background:rgba(11,11,11,.96);
+    backdrop-filter:blur(12px);
+    display:flex;
+    overflow-x:auto;
+    flex-wrap:nowrap;
+    scrollbar-width:none;
+    border-bottom:1px solid #242424;
+  }
+  .viewer-tools::-webkit-scrollbar{display:none}
+  .viewer-tools .btn{flex:0 0 auto;white-space:nowrap}
+  #imageInfo{display:none}
+
+  .grid{
+    display:flex!important;
+    flex-direction:column;
+    gap:10px;
+    margin-top:0;
+  }
+  .grid>div,.grid>aside{display:contents}
+
+  .panel{
+    border-radius:12px;
+    padding:14px;
+    margin:0;
+    background:#131313;
+  }
+  .panel h3{
+    position:sticky;
+    top:calc(min(46vh,430px) + 53px);
+    z-index:20;
+    background:#131313;
+    padding:4px 0 10px;
+    margin:0 0 6px;
+  }
+
+  /* Film looks: swipe horizontally like a mobile editor. */
+  #looks{
+    display:flex!important;
+    overflow-x:auto;
+    gap:9px;
+    padding:2px 1px 8px;
+    scrollbar-width:none;
+  }
+  #looks::-webkit-scrollbar{display:none}
+  .look{
+    flex:0 0 145px;
+    padding:8px;
+  }
+  .thumb{height:58px}
+
+  .row{
+    grid-template-columns:82px 1fr 34px!important;
+    gap:8px;
+    margin:10px 0;
+  }
+  .row label{font-size:12px}
+  .row .val{font-size:12px}
+  input[type=range]{height:28px}
+
+  /* Give the controls a clean Lightroom-like rhythm. */
+  .panel:has(#exposure),
+  .panel:has(#grain){
+    padding-top:10px;
+  }
+
+  footer{display:none}
+}
+
 </style>
 </head>
 <body>
