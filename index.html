@@ -60,135 +60,118 @@ details{border-top:1px solid var(--line);padding-top:14px;margin-top:15px}detail
 footer{text-align:center;color:#777;font-size:12px;margin-top:45px}
 @media(max-width:900px){.grid{grid-template-columns:1fr}.looks{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:560px){header{padding-top:24px}.topbar{align-items:flex-start}.looks{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:90px 1fr 32px}.toolbar{display:block}.toolbar-group{margin-bottom:8px}.btn{padding:9px 11px}}
+</style>
 
-/* ===== GHUROUB Mobile Lightroom-style workspace ===== */
-@media (max-width:560px){
-  body{padding-bottom:0}
-  /* Once a photo is loaded, give the editor the whole screen. */
-  body:has(#workspace.active) header,
-  body:has(#workspace.active) #dropzone,
-  body:has(#workspace.active) #loadError{display:none!important}
-  main{padding:0 10px}
-  #workspace.active{padding-top:0}
+<style>
+@media (max-width:700px){
+  html,body{overflow-x:hidden}
+  header{position:sticky;top:0;z-index:1000;padding:9px 14px;background:rgba(10,10,10,.97);backdrop-filter:blur(14px)}
+  header h1,header p,header .eyebrow{display:none}
+  header .brand{font-size:20px}
 
-  .toolbar{
-    display:none!important;
-  }
-
-  /* The photo stays pinned while the user scrolls through adjustments. */
-  #compareWrap{
+  #mobileEditor{
     position:sticky;
-    top:0;
-    z-index:100;
-    height:min(46vh,430px);
-    min-height:250px;
-    width:100%;
-    margin:0 -0px 0;
-    border-radius:0 0 12px 12px;
-    border-left:0;border-right:0;
-    background:#050505;
+    top:48px;
+    z-index:900;
+    display:block;
+    margin:0 -10px 12px;
+    padding:7px 10px 9px;
+    background:#090909;
+    border-bottom:1px solid #292929;
+  }
+  .mobile-photo{
+    height:42vh;
+    min-height:235px;
+    max-height:430px;
     display:flex;
     align-items:center;
     justify-content:center;
-    box-shadow:0 8px 24px rgba(0,0,0,.45);
+    overflow:hidden;
+    border:1px solid #292929;
+    border-radius:11px;
+    background:#030303;
   }
-  #compareWrap > #canvasBefore{
-    width:100%!important;
-    height:100%!important;
+  .mobile-photo canvas{
+    display:block;
+    width:auto!important;
+    height:auto!important;
+    max-width:100%;
+    max-height:100%;
     object-fit:contain;
   }
-  #canvasAfterWrap{
-    inset:0!important;
-    width:50%;
-    height:100%;
-  }
-  #canvasAfterWrap canvas{
-    width:100%!important;
-    height:100%!important;
-    object-fit:contain;
-    left:0!important;
-    top:0!important;
-  }
-  #handle:after{width:34px;height:34px;font-size:13px}
-  .tag{bottom:8px;font-size:9px;padding:5px 7px}
-
-  .viewer-tools{
-    position:sticky;
-    top:min(46vh,430px);
-    z-index:99;
-    margin:0 -0px 10px;
-    padding:8px 0;
-    background:rgba(11,11,11,.96);
-    backdrop-filter:blur(12px);
+  #mobileEmpty{position:absolute;color:#777;font-size:13px}
+  .mobile-photo-bar{
     display:flex;
-    overflow-x:auto;
-    flex-wrap:nowrap;
-    scrollbar-width:none;
-    border-bottom:1px solid #242424;
+    align-items:center;
+    gap:6px;
+    padding-top:7px;
   }
-  .viewer-tools::-webkit-scrollbar{display:none}
-  .viewer-tools .btn{flex:0 0 auto;white-space:nowrap}
-  #imageInfo{display:none}
-
-  .grid{
-    display:flex!important;
-    flex-direction:column;
-    gap:10px;
-    margin-top:0;
+  .mobile-photo-btn{
+    min-width:76px;
+    padding:8px 12px;
+    border:1px solid #363636;
+    border-radius:9px;
+    background:#151515;
+    color:#eee;
+    font-weight:800;
+    touch-action:manipulation;
   }
-  .grid>div,.grid>aside{display:contents}
-
-  .panel{
-    border-radius:12px;
-    padding:14px;
-    margin:0;
-    background:#131313;
+  .mobile-photo-btn.active{
+    border-color:#e6aa57;
+    color:#e6aa57;
+    background:#1b1710;
   }
-  .panel h3{
-    position:sticky;
-    top:calc(min(46vh,430px) + 53px);
-    z-index:20;
-    background:#131313;
-    padding:4px 0 10px;
-    margin:0 0 6px;
+  .mobile-photo-bar span{
+    margin-right:auto;
+    color:#777;
+    font-size:10px;
+    white-space:nowrap;
   }
 
-  /* Film looks: swipe horizontally like a mobile editor. */
+  /* Do not show the old split image on mobile. */
+  #compareWrap{display:none!important}
+  .viewer-tools{display:none!important}
+
+  /* Looks are swipeable, like mobile photo apps. */
   #looks{
     display:flex!important;
-    overflow-x:auto;
-    gap:9px;
-    padding:2px 1px 8px;
+    overflow-x:auto!important;
+    flex-wrap:nowrap!important;
+    gap:9px!important;
+    padding:2px 2px 8px;
     scrollbar-width:none;
+    scroll-snap-type:x proximity;
   }
   #looks::-webkit-scrollbar{display:none}
-  .look{
+  #looks .look{
     flex:0 0 145px;
-    padding:8px;
-  }
-  .thumb{height:58px}
-
-  .row{
-    grid-template-columns:82px 1fr 34px!important;
-    gap:8px;
-    margin:10px 0;
-  }
-  .row label{font-size:12px}
-  .row .val{font-size:12px}
-  input[type=range]{height:28px}
-
-  /* Give the controls a clean Lightroom-like rhythm. */
-  .panel:has(#exposure),
-  .panel:has(#grain){
-    padding-top:10px;
+    scroll-snap-align:start;
   }
 
-  footer{display:none}
+  .row{grid-template-columns:72px 1fr 34px!important;gap:8px!important}
+  input[type=range]{height:30px;touch-action:pan-y}
+  .panel{padding:13px;border-radius:12px}
 }
-
+@media (min-width:701px){
+  #mobileEditor{display:none}
+}
 </style>
+
 </head>
 <body>
+
+<div id="mobileEditor" class="mobile-editor">
+  <div class="mobile-photo">
+    <canvas id="mobileCanvas"></canvas>
+    <div id="mobileEmpty">اختر صورة لبدء التعديل</div>
+  </div>
+  <div class="mobile-photo-bar">
+    <button id="mobileEdited" class="mobile-photo-btn active" type="button">المعدل</button>
+    <button id="mobileOriginal" class="mobile-photo-btn" type="button">الأصل</button>
+    <span>اضغط «الأصل» لرؤية الصورة قبل التعديل</span>
+  </div>
+</div>
+
 <header>
   <div class="topbar"><div class="brand">GHUROUB<span>.</span></div><div class="eyebrow">FILM LAB V2</div></div>
   <h1>حوّل صورتك إلى <span>فيلم.</span></h1>
@@ -321,7 +304,35 @@ function setVal(id,v){$(id).value=v;$(id+"Val").textContent=v}
 function snapshot(){return Object.fromEntries(ids.map(id=>[id,val(id)]))}
 function restore(s){ids.forEach(id=>{if(s[id]!=null)setVal(id,s[id])});uhdActive=false;uhdCanvas=null;render()}
 function pushHistory(){history.push(snapshot());if(history.length>20)history.shift()}
-ids.forEach(id=>$(id).addEventListener("input",()=>{$(id+"Val").textContent=$(id).value;uhdActive=false;uhdCanvas=null;requestRender()}));
+
+let lastSliderRender=0, sliderTimer=null;
+function requestSliderRender(){
+  const now=performance.now();
+  if(now-lastSliderRender>80){
+    lastSliderRender=now;
+    requestRender();
+  }else{
+    clearTimeout(sliderTimer);
+    sliderTimer=setTimeout(()=>{
+      lastSliderRender=performance.now();
+      requestRender();
+    },85);
+  }
+}
+ids.forEach(id=>{
+  const el=$(id);
+  el.addEventListener("input",()=>{
+    $(id+"Val").textContent=el.value;
+    uhdActive=false;uhdCanvas=null;
+    requestSliderRender();
+  });
+  el.addEventListener("change",()=>{
+    clearTimeout(sliderTimer);
+    lastSliderRender=performance.now();
+    requestRender();
+  });
+});
+
 
 Object.entries(LOOKS).forEach(([key,l])=>{
   const b=document.createElement("button");b.className="look"+(key===currentLook?" active":"");
@@ -339,7 +350,7 @@ function loadFile(file){
  }
  const url=URL.createObjectURL(file);const im=new Image();
  im.onload=()=>{URL.revokeObjectURL(url);img=im;W=im.naturalWidth;H=im.naturalHeight;
-   const max=1800, s=Math.min(1,max/W);const pw=Math.round(W*s),ph=Math.round(H*s);
+   const max=1200, s=Math.min(1,max/W);const pw=Math.round(W*s),ph=Math.round(H*s);
    before.width=after.width=pw;before.height=after.height=ph;cb.imageSmoothingQuality="high";cb.drawImage(im,0,0,pw,ph);
    sourceData=cb.getImageData(0,0,pw,ph);workspace.classList.add("active");dropzone.classList.add("hidden");
    $("imageInfo").textContent=`${W} × ${H}px`;wrap.style.width="100%";setSplit(50);render();
@@ -428,7 +439,7 @@ function requestRender(){cancelAnimationFrame(raf);raf=requestAnimationFrame(ren
 
 function setSplit(pct){pct=Math.max(0,Math.min(100,pct));wrap.style.width=pct+"%";handle.style.right=(100-pct)+"%"}
 let drag=false;
-handle.addEventListener("pointerdown",()=>{drag=true;handle.setPointerCapture?.(event.pointerId)});
+handle.addEventListener("pointerdown",e=>{drag=true;handle.setPointerCapture?.(e.pointerId);e.preventDefault()});
 window.addEventListener("pointerup",()=>drag=false);
 window.addEventListener("pointermove",e=>{if(drag){const r=compare.getBoundingClientRect();setSplit((e.clientX-r.left)/r.width*100)}})
 compare.addEventListener("pointerdown",e=>{if(e.target!==handle){const r=compare.getBoundingClientRect();setSplit((e.clientX-r.left)/r.width*100)}});
@@ -470,5 +481,82 @@ $("uhdBtn").onclick=async()=>{
  $("uhdBtn").disabled=false
 }
 </script>
+
+<script>
+(function(){
+  const mobileCanvas=document.getElementById("mobileCanvas");
+  const empty=document.getElementById("mobileEmpty");
+  const edited=document.getElementById("mobileEdited");
+  const original=document.getElementById("mobileOriginal");
+  if(!mobileCanvas)return;
+
+  const ctx=mobileCanvas.getContext("2d");
+  let originalCopy=null;
+  let showOriginal=false;
+  let raf=0;
+
+  function schedule(){
+    if(raf)return;
+    raf=requestAnimationFrame(()=>{
+      raf=0;
+      const after=document.getElementById("canvasAfter");
+      if(!after || !after.width || !after.height){
+        empty.style.display="block";
+        return;
+      }
+      empty.style.display="none";
+
+      if(!originalCopy){
+        originalCopy=document.createElement("canvas");
+        originalCopy.width=after.width;
+        originalCopy.height=after.height;
+        originalCopy.getContext("2d").drawImage(after,0,0);
+      }
+
+      const source=showOriginal?originalCopy:after;
+      mobileCanvas.width=source.width;
+      mobileCanvas.height=source.height;
+
+      const box=mobileCanvas.parentElement;
+      const scale=Math.min(
+        (box.clientWidth-4)/source.width,
+        (box.clientHeight-4)/source.height,
+        1
+      );
+      mobileCanvas.style.width=Math.max(1,Math.round(source.width*scale))+"px";
+      mobileCanvas.style.height=Math.max(1,Math.round(source.height*scale))+"px";
+
+      ctx.clearRect(0,0,mobileCanvas.width,mobileCanvas.height);
+      ctx.drawImage(source,0,0);
+    });
+  }
+
+  function mode(originalMode){
+    showOriginal=originalMode;
+    original.classList.toggle("active",originalMode);
+    edited.classList.toggle("active",!originalMode);
+    schedule();
+  }
+
+  original.addEventListener("click",()=>mode(true));
+  edited.addEventListener("click",()=>mode(false));
+
+  /* A new file means a new untouched original. */
+  document.getElementById("fileInput")?.addEventListener("change",()=>{
+    originalCopy=null;
+    mode(false);
+    setTimeout(()=>{
+      schedule();
+      document.getElementById("mobileEditor")?.scrollIntoView({behavior:"smooth",block:"start"});
+    },180);
+  });
+
+  /* Update the mobile preview after edits, without rendering anything extra. */
+  setInterval(schedule,250);
+  window.addEventListener("resize",schedule,{passive:true});
+  setTimeout(schedule,300);
+})();
+</script>
+
 </body>
 </html>
