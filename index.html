@@ -63,115 +63,147 @@ footer{text-align:center;color:#777;font-size:12px;margin-top:45px}
 </style>
 
 <style>
-@media (max-width:700px){
+@media(max-width:700px){
   html,body{overflow-x:hidden}
-  header{position:sticky;top:0;z-index:1000;padding:9px 14px;background:rgba(10,10,10,.97);backdrop-filter:blur(14px)}
+  header{padding:18px 14px 10px}
   header h1,header p,header .eyebrow{display:none}
-  header .brand{font-size:20px}
+  .topbar{min-height:32px}
 
-  #mobileEditor{
+  /* Keep the actual editor preview pinned while settings scroll underneath. */
+  #workspace.active .toolbar{
     position:sticky;
-    top:48px;
-    z-index:900;
-    display:block;
-    margin:0 -10px 12px;
-    padding:7px 10px 9px;
-    background:#090909;
-    border-bottom:1px solid #292929;
+    top:0;
+    z-index:950;
+    margin:0 -10px;
+    padding:7px 10px;
+    background:rgba(9,9,9,.97);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid #252525;
   }
-  .mobile-photo{
-    height:42vh;
-    min-height:235px;
-    max-height:430px;
+  #workspace.active .toolbar-group:first-child{display:none}
+  #workspace.active .toolbar-group:last-child{
+    width:100%;
+    margin:0;
     display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-    border:1px solid #292929;
-    border-radius:11px;
-    background:#030303;
-  }
-  .mobile-photo canvas{
-    display:block;
-    width:auto!important;
-    height:auto!important;
-    max-width:100%;
-    max-height:100%;
-    object-fit:contain;
-  }
-  #mobileEmpty{position:absolute;color:#777;font-size:13px}
-  .mobile-photo-bar{
-    display:flex;
-    align-items:center;
     gap:6px;
-    padding-top:7px;
   }
-  .mobile-photo-btn{
-    min-width:76px;
-    padding:8px 12px;
-    border:1px solid #363636;
-    border-radius:9px;
-    background:#151515;
+  #workspace.active .toolbar-group:last-child .btn{
+    flex:1;
+    padding:8px 5px;
+    font-size:12px;
+  }
+
+  .mobile-viewer-bar{
+    position:absolute;
+    top:8px;
+    right:8px;
+    left:8px;
+    z-index:20;
+    display:flex;
+    gap:6px;
+    align-items:center;
+    pointer-events:none;
+  }
+  .mobile-viewer-bar button{
+    pointer-events:auto;
+    border:1px solid #454545;
+    background:rgba(10,10,10,.82);
     color:#eee;
+    border-radius:9px;
+    padding:7px 13px;
     font-weight:800;
+    font-size:12px;
+    backdrop-filter:blur(8px);
     touch-action:manipulation;
   }
-  .mobile-photo-btn.active{
+  .mobile-viewer-bar button.active{
+    background:#e6aa57;
+    color:#1b1207;
     border-color:#e6aa57;
-    color:#e6aa57;
-    background:#1b1710;
   }
-  .mobile-photo-bar span{
+  #mobileViewLabel{
     margin-right:auto;
-    color:#777;
+    color:#bbb;
+    background:rgba(0,0,0,.58);
+    border-radius:8px;
+    padding:6px 9px;
     font-size:10px;
-    white-space:nowrap;
   }
 
-  /* Do not show the old split image on mobile. */
-  #compareWrap{display:none!important}
-  .viewer-tools{display:none!important}
+  #compareWrap{
+    position:sticky;
+    top:50px;
+    z-index:900;
+    height:min(46vh,430px);
+    min-height:250px;
+    margin:0 -10px 12px;
+    border-radius:0 0 10px 10px;
+    overflow:hidden;
+    background:#030303;
+    touch-action:auto;
+  }
+  #compareWrap canvas{
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain;
+    object-position:center;
+  }
+  #canvasAfterWrap{
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    overflow:hidden;
+  }
+  #canvasBefore{display:none}
+  #canvasAfterWrap canvas{display:block}
+  #handle,.tag{display:none!important}
 
-  /* Looks are swipeable, like mobile photo apps. */
-  #looks{
+  /* The image itself no longer has a draggable split on phones. */
+  .viewer-tools{
+    display:flex;
+    gap:6px;
+    margin:0 -10px 10px;
+    padding:0 10px;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .viewer-tools::-webkit-scrollbar{display:none}
+  .viewer-tools .btn{flex:0 0 auto;padding:8px 10px;font-size:12px}
+
+  .grid{display:block;margin-top:8px}
+  .panel{padding:14px;margin-bottom:10px;border-radius:11px}
+  .looks{
     display:flex!important;
-    overflow-x:auto!important;
+    grid-template-columns:none!important;
+    overflow-x:auto;
     flex-wrap:nowrap!important;
-    gap:9px!important;
-    padding:2px 2px 8px;
+    gap:8px;
+    padding-bottom:5px;
     scrollbar-width:none;
     scroll-snap-type:x proximity;
   }
-  #looks::-webkit-scrollbar{display:none}
-  #looks .look{
-    flex:0 0 145px;
+  .looks::-webkit-scrollbar{display:none}
+  .look{
+    flex:0 0 138px;
     scroll-snap-align:start;
   }
 
-  .row{grid-template-columns:72px 1fr 34px!important;gap:8px!important}
+  .row{
+    grid-template-columns:68px minmax(0,1fr) 34px!important;
+    gap:7px!important;
+    margin:9px 0!important;
+  }
+  .row label{font-size:11px}
+  .val{font-size:11px}
   input[type=range]{height:30px;touch-action:pan-y}
-  .panel{padding:13px;border-radius:12px}
+
+  footer{margin-top:20px}
 }
-@media (min-width:701px){
-  #mobileEditor{display:none}
-}
+@media(min-width:701px){.mobile-viewer-bar{display:none}}
 </style>
 
 </head>
 <body>
-
-<div id="mobileEditor" class="mobile-editor">
-  <div class="mobile-photo">
-    <canvas id="mobileCanvas"></canvas>
-    <div id="mobileEmpty">اختر صورة لبدء التعديل</div>
-  </div>
-  <div class="mobile-photo-bar">
-    <button id="mobileEdited" class="mobile-photo-btn active" type="button">المعدل</button>
-    <button id="mobileOriginal" class="mobile-photo-btn" type="button">الأصل</button>
-    <span>اضغط «الأصل» لرؤية الصورة قبل التعديل</span>
-  </div>
-</div>
-
 <header>
   <div class="topbar"><div class="brand">GHUROUB<span>.</span></div><div class="eyebrow">FILM LAB V2</div></div>
   <h1>حوّل صورتك إلى <span>فيلم.</span></h1>
@@ -201,6 +233,11 @@ footer{text-align:center;color:#777;font-size:12px;margin-top:45px}
   </div>
 </div>
 
+<div class="mobile-viewer-bar" aria-label="عرض الصورة">
+  <button type="button" id="mobileOriginalBtn">الأصل</button>
+  <button type="button" id="mobileEditedBtn" class="active">المعدل</button>
+  <span id="mobileViewLabel">المعدل</span>
+</div>
 <div id="compareWrap" class="compare-wrap">
   <canvas id="canvasBefore"></canvas>
   <div id="canvasAfterWrap"><canvas id="canvasAfter"></canvas></div>
@@ -308,7 +345,7 @@ function pushHistory(){history.push(snapshot());if(history.length>20)history.shi
 let lastSliderRender=0, sliderTimer=null;
 function requestSliderRender(){
   const now=performance.now();
-  if(now-lastSliderRender>80){
+  if(now-lastSliderRender>120){
     lastSliderRender=now;
     requestRender();
   }else{
@@ -316,7 +353,7 @@ function requestSliderRender(){
     sliderTimer=setTimeout(()=>{
       lastSliderRender=performance.now();
       requestRender();
-    },85);
+    },125);
   }
 }
 ids.forEach(id=>{
@@ -350,7 +387,7 @@ function loadFile(file){
  }
  const url=URL.createObjectURL(file);const im=new Image();
  im.onload=()=>{URL.revokeObjectURL(url);img=im;W=im.naturalWidth;H=im.naturalHeight;
-   const max=1200, s=Math.min(1,max/W);const pw=Math.round(W*s),ph=Math.round(H*s);
+   const max=650, s=Math.min(1,max/W);const pw=Math.round(W*s),ph=Math.round(H*s);
    before.width=after.width=pw;before.height=after.height=ph;cb.imageSmoothingQuality="high";cb.drawImage(im,0,0,pw,ph);
    sourceData=cb.getImageData(0,0,pw,ph);workspace.classList.add("active");dropzone.classList.add("hidden");
    $("imageInfo").textContent=`${W} × ${H}px`;wrap.style.width="100%";setSplit(50);render();
@@ -386,7 +423,7 @@ function boxBlur(plane,w,h,r){
 }
 
 function render(){
- if(!sourceData)return;const d=sourceData.data,n=W0=before.width,H0=before.height,N=n*H0;
+ if(!sourceData)return;const d=sourceData.data,n=before.width,H0=before.height,N=n*H0;
  const R=new Float32Array(N),G=new Float32Array(N),B=new Float32Array(N);
  const ex=val("exposure")/100, hi=val("highlights")/100, sh=val("shadows")/100, wh=val("whites")/100, bl=val("blacks")/100;
  const warm=val("warmth"), tint=val("tint"), con=val("contrast")/100, sat=val("saturation")/100, vib=val("vibrance")/100;
@@ -460,7 +497,7 @@ function exportCanvas(){
  return after;
 }
 function download(type){
- const c=exportCanvas();c.toBlob(blob=>{const a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=`ghuroub-${type==="image/png"?"edit":"film"}.${type==="image/png"?"png":"jpg"}`;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)},type,type==="image/jpeg"?.98:undefined)
+ const c=exportCanvas();c.toBlob(blob=>{const a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=`ghuroub-${type==="image/png"?"edit":"film"}.${type==="image/png"?"png":"jpg"}`;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)},type,type==="image/jpeg" ? 0.98 : undefined)
 }
 $("downloadJpg").onclick=()=>download("image/jpeg");$("downloadPng").onclick=()=>download("image/png");
 
@@ -484,77 +521,43 @@ $("uhdBtn").onclick=async()=>{
 
 <script>
 (function(){
-  const mobileCanvas=document.getElementById("mobileCanvas");
-  const empty=document.getElementById("mobileEmpty");
-  const edited=document.getElementById("mobileEdited");
-  const original=document.getElementById("mobileOriginal");
-  if(!mobileCanvas)return;
+  const beforeBtn=document.getElementById("mobileOriginalBtn");
+  const afterBtn=document.getElementById("mobileEditedBtn");
+  const label=document.getElementById("mobileViewLabel");
+  const before=document.getElementById("canvasBefore");
+  const afterWrap=document.getElementById("canvasAfterWrap");
+  const after=document.getElementById("canvasAfter");
+  if(!beforeBtn||!afterBtn)return;
 
-  const ctx=mobileCanvas.getContext("2d");
-  let originalCopy=null;
-  let showOriginal=false;
-  let raf=0;
-
-  function schedule(){
-    if(raf)return;
-    raf=requestAnimationFrame(()=>{
-      raf=0;
-      const after=document.getElementById("canvasAfter");
-      if(!after || !after.width || !after.height){
-        empty.style.display="block";
-        return;
-      }
-      empty.style.display="none";
-
-      if(!originalCopy){
-        originalCopy=document.createElement("canvas");
-        originalCopy.width=after.width;
-        originalCopy.height=after.height;
-        originalCopy.getContext("2d").drawImage(after,0,0);
-      }
-
-      const source=showOriginal?originalCopy:after;
-      mobileCanvas.width=source.width;
-      mobileCanvas.height=source.height;
-
-      const box=mobileCanvas.parentElement;
-      const scale=Math.min(
-        (box.clientWidth-4)/source.width,
-        (box.clientHeight-4)/source.height,
-        1
-      );
-      mobileCanvas.style.width=Math.max(1,Math.round(source.width*scale))+"px";
-      mobileCanvas.style.height=Math.max(1,Math.round(source.height*scale))+"px";
-
-      ctx.clearRect(0,0,mobileCanvas.width,mobileCanvas.height);
-      ctx.drawImage(source,0,0);
-    });
+  function mode(original){
+    beforeBtn.classList.toggle("active",original);
+    afterBtn.classList.toggle("active",!original);
+    label.textContent=original?"الأصل":"المعدل";
+    if(original){
+      before.style.display="block";
+      afterWrap.style.display="none";
+    }else{
+      before.style.display="none";
+      afterWrap.style.display="block";
+    }
   }
+  beforeBtn.addEventListener("click",()=>mode(true));
+  afterBtn.addEventListener("click",()=>mode(false));
 
-  function mode(originalMode){
-    showOriginal=originalMode;
-    original.classList.toggle("active",originalMode);
-    edited.classList.toggle("active",!originalMode);
-    schedule();
-  }
-
-  original.addEventListener("click",()=>mode(true));
-  edited.addEventListener("click",()=>mode(false));
-
-  /* A new file means a new untouched original. */
+  /* When a new photo is loaded, always start on the edited view. */
   document.getElementById("fileInput")?.addEventListener("change",()=>{
-    originalCopy=null;
-    mode(false);
-    setTimeout(()=>{
-      schedule();
-      document.getElementById("mobileEditor")?.scrollIntoView({behavior:"smooth",block:"start"});
-    },180);
+    setTimeout(()=>mode(false),80);
   });
 
-  /* Update the mobile preview after edits, without rendering anything extra. */
-  setInterval(schedule,250);
-  window.addEventListener("resize",schedule,{passive:true});
-  setTimeout(schedule,300);
+  /* Keep the comparison handle desktop-only. */
+  function mobileFix(){
+    if(window.innerWidth<=700){
+      before.style.display="none";
+      afterWrap.style.display="block";
+    }
+  }
+  window.addEventListener("resize",mobileFix,{passive:true});
+  mobileFix();
 })();
 </script>
 
