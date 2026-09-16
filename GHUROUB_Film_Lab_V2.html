@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHUROUB — Film Lab V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Oswald:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0b0b;--surface:#141414;--surface2:#1b1b1b;--surface3:#232323;
+  --accent:#e6aa57;--accent2:#d38b37;--teal:#347b74;
+  --text:#f5f2ec;--muted:#9d988e;--line:#30302e;--danger:#d96d5b;
+}
+*{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--text);font-family:Tajawal,sans-serif}
+body{min-height:100vh;padding-bottom:60px}
+button,input{font:inherit}.hidden{display:none!important}
+header{max-width:1180px;margin:auto;padding:34px 22px 24px;border-bottom:1px solid var(--line)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{font-family:Oswald,sans-serif;letter-spacing:.12em;font-size:23px}.brand span{color:var(--accent)}
+.eyebrow{font:11px Oswald,sans-serif;letter-spacing:.24em;color:#8e795c;text-transform:uppercase}
+h1{font-size:clamp(32px,5vw,56px);margin:12px 0 8px;font-weight:900}
+h1 span{color:var(--accent)} header p{color:var(--muted);line-height:1.8;margin:0;max-width:650px}
+main{max-width:1180px;margin:auto;padding:24px 22px}
+#dropzone{border:1.5px dashed var(--line);background:radial-gradient(700px 220px at 50% 0,#211b13,transparent),var(--surface);padding:55px 20px;text-align:center;cursor:pointer;border-radius:8px;transition:.2s}
+#dropzone.drag{border-color:var(--accent);background:var(--surface2)}
+#dropzone svg{width:38px;height:38px;stroke:var(--accent);margin-bottom:12px}
+.main-txt{font-size:17px;font-weight:700}.sub-txt{font-size:13px;color:var(--muted);margin-top:7px}
+#fileInput{display:none}.error{color:var(--danger);text-align:center;margin:10px 0;font-size:13px}
+.workspace{display:none}.workspace.active{display:block}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;margin-bottom:16px}
+.toolbar-group{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:10px 15px;border-radius:5px;cursor:pointer;font-weight:700}
+.btn:hover{border-color:var(--accent2)}.btn.primary{background:var(--accent);color:#1b1207;border-color:var(--accent)}
+.btn.teal{background:var(--teal);border-color:var(--teal)}.btn.danger{color:#ffb0a4}
+.compare-wrap{position:relative;background:#000;border:1px solid var(--line);border-radius:8px;overflow:hidden;touch-action:none;user-select:none}
+.compare-wrap canvas{display:block;width:100%;height:auto}
+#canvasAfterWrap{position:absolute;inset:0 auto 0 0;width:50%;overflow:hidden}
+#canvasAfterWrap canvas{position:absolute;inset:0 auto auto 0;width:auto;max-width:none;height:100%}
+#handle{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);right:50%;cursor:ew-resize;z-index:5}
+#handle:after{content:"↔";position:absolute;top:50%;right:50%;transform:translate(50%,-50%);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#1b1207;font-weight:900}
+.tag{position:absolute;bottom:12px;background:#0009;padding:6px 10px;border-radius:3px;font:11px Oswald;color:#bbb;letter-spacing:.15em;z-index:4}.before{right:12px}.after{left:12px;color:var(--accent)}
+.viewer-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.viewer-tools .btn{font-size:12px;padding:8px 11px}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px}
+.panel h3{font:13px Oswald;letter-spacing:.14em;color:var(--accent);margin:0 0 15px;text-transform:uppercase}
+.looks{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+.look{border:1px solid var(--line);background:#101010;color:var(--text);border-radius:7px;padding:9px;text-align:right;cursor:pointer}
+.look:hover,.look.active{border-color:var(--accent)}.thumb{height:52px;border-radius:4px;margin-bottom:7px;background:linear-gradient(135deg,#5d3c2c,#e1a15c 48%,#314f4c)}
+.look:nth-child(2) .thumb{filter:saturate(.7) contrast(1.2)}.look:nth-child(3) .thumb{filter:sepia(.2) contrast(1.25)}.look:nth-child(4) .thumb{filter:saturate(1.45)}.look:nth-child(5) .thumb{filter:grayscale(1)}
+.look b{font-size:12px}.look small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.row{display:grid;grid-template-columns:110px 1fr 38px;align-items:center;gap:10px;margin:12px 0}.row label{font-size:12px;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--accent)}.val{font:12px Oswald;color:var(--accent);text-align:left}
+details{border-top:1px solid var(--line);padding-top:14px;margin-top:15px}details summary{cursor:pointer;color:var(--text);font-weight:700}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.preset-save{display:flex;gap:7px}.preset-save input{flex:1;min-width:0;background:#0e0e0e;color:white;border:1px solid var(--line);border-radius:4px;padding:9px}
+.saved-list{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.saved-list button{background:#222;border:1px solid #333;color:#ddd;padding:6px 9px;border-radius:20px;cursor:pointer}
+.stat{color:var(--muted);font-size:12px;line-height:1.7}.check{display:flex;align-items:center;gap:8px;margin:10px 0;color:#ccc;font-size:13px}
+footer{text-align:center;color:#777;font-size:12px;margin-top:45px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.looks{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){header{padding-top:24px}.topbar{align-items:flex-start}.looks{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:90px 1fr 32px}.toolbar{display:block}.toolbar-group{margin-bottom:8px}.btn{padding:9px 11px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="topbar"><div class="brand">GHUROUB<span>.</span></div><div class="eyebrow">FILM LAB V2</div></div>
+  <h1>حوّل صورتك إلى <span>فيلم.</span></h1>
+  <p>مختبر صور محلي داخل المتصفح: Film Looks، تحكم احترافي، حبيبات وهالات سينمائية، مقارنة قبل/بعد، وتحسين عالي الدقة.</p>
+</header>
+
+<main>
+<label id="dropzone">
+<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+<div class="main-txt">اسحب الصورة هنا أو اضغط للاختيار</div>
+<div class="sub-txt">JPG · PNG · WebP — المعالجة محلية ولا تُرفع الصورة إلى سيرفر</div>
+<input id="fileInput" type="file" accept="image/*">
+</label>
+<div id="loadError" class="error hidden"></div>
+
+<section id="workspace" class="workspace">
+<div class="toolbar">
+  <div class="toolbar-group">
+    <button class="btn" id="resetBtn">↺ إعادة ضبط</button>
+    <button class="btn" id="undoBtn">↶ تراجع</button>
+    <button class="btn" id="randomBtn">🎲 ستايل عشوائي</button>
+    <button class="btn" id="holdBtn">👁 اضغط لرؤية الأصل</button>
+  </div>
+  <div class="toolbar-group">
+    <button class="btn" id="zoom100">100%</button><button class="btn" id="zoomFit">ملاءمة</button>
+    <button class="btn" id="fullscreenBtn">⛶ ملء الشاشة</button>
+  </div>
+</div>
+
+<div id="compareWrap" class="compare-wrap">
+  <canvas id="canvasBefore"></canvas>
+  <div id="canvasAfterWrap"><canvas id="canvasAfter"></canvas></div>
+  <div id="handle"></div><div class="tag before">ORIGINAL</div><div class="tag after">GHUROUB</div>
+</div>
+<div class="viewer-tools">
+  <button class="btn" id="downloadJpg">تحميل JPG</button>
+  <button class="btn" id="downloadPng">تحميل PNG</button>
+  <button class="btn teal" id="uhdBtn">✦ تحسين UHD</button>
+  <span class="stat" id="imageInfo"></span>
+</div>
+
+<div class="grid">
+<div>
+<div class="panel">
+<h3>Film Looks</h3>
+<div class="looks" id="looks"></div>
+</div>
+
+<div class="panel">
+<h3>ضبط الصورة</h3>
+<div class="row"><label>التعريض</label><input type="range" id="exposure" min="-100" max="100" value="0"><span class="val" id="exposureVal">0</span></div>
+<div class="row"><label>الإضاءة</label><input type="range" id="highlights" min="-100" max="100" value="0"><span class="val" id="highlightsVal">0</span></div>
+<div class="row"><label>الظلال</label><input type="range" id="shadows" min="-100" max="100" value="0"><span class="val" id="shadowsVal">0</span></div>
+<div class="row"><label>الأبيض</label><input type="range" id="whites" min="-100" max="100" value="0"><span class="val" id="whitesVal">0</span></div>
+<div class="row"><label>الأسود</label><input type="range" id="blacks" min="-100" max="100" value="0"><span class="val" id="blacksVal">0</span></div>
+<div class="row"><label>الحرارة</label><input type="range" id="warmth" min="-100" max="100" value="0"><span class="val" id="warmthVal">0</span></div>
+<div class="row"><label>الصبغة</label><input type="range" id="tint" min="-100" max="100" value="0"><span class="val" id="tintVal">0</span></div>
+<div class="row"><label>التباين</label><input type="range" id="contrast" min="-100" max="100" value="0"><span class="val" id="contrastVal">0</span></div>
+<div class="row"><label>الحيوية</label><input type="range" id="vibrance" min="-100" max="100" value="0"><span class="val" id="vibranceVal">0</span></div>
+<div class="row"><label>التشبع</label><input type="range" id="saturation" min="-100" max="100" value="0"><span class="val" id="saturationVal">0</span></div>
+</div>
+
+<div class="panel">
+<h3>Film Effects</h3>
+<div class="row"><label>حبيبات</label><input type="range" id="grain" min="0" max="100" value="10"><span class="val" id="grainVal">10</span></div>
+<div class="row"><label>Halation</label><input type="range" id="halation" min="0" max="100" value="0"><span class="val" id="halationVal">0</span></div>
+<div class="row"><label>Bloom</label><input type="range" id="bloom" min="0" max="100" value="0"><span class="val" id="bloomVal">0</span></div>
+<div class="row"><label>Fade</label><input type="range" id="fade" min="0" max="100" value="0"><span class="val" id="fadeVal">0</span></div>
+<div class="row"><label>Vignette</label><input type="range" id="vignette" min="0" max="100" value="15"><span class="val" id="vignetteVal">15</span></div>
+<div class="row"><label>الحدة</label><input type="range" id="sharp" min="0" max="100" value="20"><span class="val" id="sharpVal">20</span></div>
+</div>
+</div>
+
+<aside>
+<div class="panel">
+<h3>Smart Tools</h3>
+<button class="btn primary" id="autoBtn" style="width:100%">✨ تحسين تلقائي</button>
+<div class="stat" style="margin-top:10px">يضبط التعريض والتباين والظلال والإضاءة والتشبع والحدة بناءً على توزيع درجات الصورة.</div>
+<label class="check"><input type="checkbox" id="smartSkin"> حماية ألوان البشرة</label>
+</div>
+
+<div class="panel">
+<h3>حفظ Preset</h3>
+<div class="preset-save"><input id="presetName" placeholder="اسم الستايل"><button class="btn primary" id="savePreset">حفظ</button></div>
+<div id="savedList" class="saved-list"></div>
+</div>
+
+<div class="panel">
+<h3>Noise Reduction</h3>
+<div class="row"><label>إضاءة</label><input type="range" id="nrLuma" min="0" max="100" value="0"><span class="val" id="nrLumaVal">0</span></div>
+<div class="row"><label>ألوان</label><input type="range" id="nrColor" min="0" max="100" value="0"><span class="val" id="nrColorVal">0</span></div>
+</div>
+
+<div class="panel">
+<h3>Export</h3>
+<label class="check"><input type="checkbox" id="exportUHD"> تصدير بأعلى دقة متاحة</label>
+<div class="stat">JPG جودة 98% أو PNG بدون ضغط. خيار UHD يكبّر حتى 2× مع معالجة تفاصيل محلية.</div>
+</div>
+</aside>
+</div>
+</section>
+</main>
+<footer>GHUROUB Film Lab — يعمل محلياً داخل المتصفح</footer>
+
+<script>
+const LOOKS={
+  eterna:{name:"Eterna",desc:"سينمائي هادئ",warmth:18,contrast:-12,saturation:-28,grain:16,vignette:28,fade:12,halation:8,bloom:8},
+  chrome:{name:"Classic Chrome",desc:"ألوان مكتومة",warmth:10,contrast:20,saturation:-22,grain:20,vignette:30,fade:4,halation:5,bloom:4},
+  classicneg:{name:"Classic Neg",desc:"كونتراست فيلمي",warmth:16,contrast:15,saturation:-5,grain:25,vignette:20,fade:5,halation:12,bloom:4},
+  portra:{name:"Portra",desc:"بورتريه ناعم",warmth:22,contrast:-5,saturation:-8,grain:12,vignette:12,fade:8,halation:14,bloom:10},
+  gold:{name:"Kodak Gold",desc:"صيف دافئ",warmth:30,contrast:12,saturation:10,grain:20,vignette:16,fade:3,halation:10,bloom:6},
+  vision:{name:"Vision3",desc:"سينما 500T",warmth:-4,contrast:8,saturation:-12,grain:13,vignette:22,fade:6,halation:18,bloom:12},
+  cine:{name:"CineStill",desc:"نيون وهالات",warmth:5,contrast:18,saturation:8,grain:18,vignette:25,fade:2,halation:34,bloom:18},
+  velvia:{name:"Velvia",desc:"حيوي ومشرق",warmth:8,contrast:28,saturation:34,grain:7,vignette:15,fade:0,halation:4,bloom:2},
+  astia:{name:"Astia",desc:"ناعم للبورتريه",warmth:12,contrast:-8,saturation:12,grain:7,vignette:8,fade:4,halation:8,bloom:8},
+  acros:{name:"Acros",desc:"أبيض وأسود",warmth:0,contrast:20,saturation:-100,grain:28,vignette:32,fade:4,halation:0,bloom:0}
+};
+
+const ids=["exposure","highlights","shadows","whites","blacks","warmth","tint","contrast","vibrance","saturation","grain","halation","bloom","fade","vignette","sharp","nrLuma","nrColor"];
+const $=id=>document.getElementById(id);
+const dropzone=$("dropzone"), fileInput=$("fileInput"), workspace=$("workspace");
+const before=$("canvasBefore"), after=$("canvasAfter"), wrap=$("canvasAfterWrap"), handle=$("handle"), compare=$("compareWrap");
+const cb=before.getContext("2d"), ca=after.getContext("2d");
+let img=null, sourceData=null, W=0,H=0, uhdCanvas=null, uhdActive=false, currentLook="eterna";
+let history=[], raf=null, holding=false, zoom=1;
+
+function clamp(v){return Math.max(0,Math.min(255,v))}
+function val(id){return +$(id).value}
+function setVal(id,v){$(id).value=v;$(id+"Val").textContent=v}
+function snapshot(){return Object.fromEntries(ids.map(id=>[id,val(id)]))}
+function restore(s){ids.forEach(id=>{if(s[id]!=null)setVal(id,s[id])});uhdActive=false;uhdCanvas=null;render()}
+function pushHistory(){history.push(snapshot());if(history.length>20)history.shift()}
+ids.forEach(id=>$(id).addEventListener("input",()=>{$(id+"Val").textContent=$(id).value;uhdActive=false;uhdCanvas=null;requestRender()}));
+
+Object.entries(LOOKS).forEach(([key,l])=>{
+  const b=document.createElement("button");b.className="look"+(key===currentLook?" active":"");
+  b.innerHTML='<div class="thumb"></div><b>'+l.name+'</b><small>'+l.desc+'</small>';
+  b.onclick=()=>{pushHistory();currentLook=key;document.querySelectorAll(".look").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+    ["warmth","contrast","saturation","grain","vignette","fade","halation","bloom"].forEach(k=>setVal(k,l[k]));render()};
+  $("looks").appendChild(b);
+});
+
+function loadFile(file){
+ if(!file?.type?.startsWith("image/")){showError("اختر ملف صورة صالح.");return}
+ const url=URL.createObjectURL(file);const im=new Image();
+ im.onload=()=>{URL.revokeObjectURL(url);img=im;W=im.naturalWidth;H=im.naturalHeight;
+   const max=1800, s=Math.min(1,max/W);const pw=Math.round(W*s),ph=Math.round(H*s);
+   before.width=after.width=pw;before.height=after.height=ph;cb.imageSmoothingQuality="high";cb.drawImage(im,0,0,pw,ph);
+   sourceData=cb.getImageData(0,0,pw,ph);workspace.classList.add("active");dropzone.classList.add("hidden");
+   $("imageInfo").textContent=`${W} × ${H}px`;wrap.style.width="100%";setSplit(50);render();
+ };
+ im.onerror=()=>showError("تعذر فتح الصورة.");
+ im.src=url;
+}
+function showError(s){$("loadError").textContent=s;$("loadError").classList.remove("hidden")}
+
+dropzone.addEventListener("dragover",e=>{e.preventDefault();dropzone.classList.add("drag")});
+dropzone.addEventListener("dragleave",()=>dropzone.classList.remove("drag"));
+dropzone.addEventListener("drop",e=>{e.preventDefault();dropzone.classList.remove("drag");loadFile(e.dataTransfer.files[0])});
+fileInput.addEventListener("change",e=>loadFile(e.target.files[0]));
+dropzone.addEventListener("click",()=>fileInput.click());
+
+function boxBlur(plane,w,h,r){
+ const rad=Math.max(1,Math.round(r)),tmp=new Float32Array(plane.length),out=new Float32Array(plane.length);
+ for(let y=0;y<h;y++){let sum=0;for(let x=-rad;x<=rad;x++)sum+=plane[y*w+Math.min(w-1,Math.max(0,x))];
+  for(let x=0;x<w;x++){if(x>0){sum+=plane[y*w+Math.min(w-1,x+rad)]-plane[y*w+Math.max(0,x-rad-1)]}tmp[y*w+x]=sum/(2*rad+1)}}
+ for(let x=0;x<w;x++){let sum=0;for(let y=-rad;y<=rad;y++)sum+=tmp[Math.min(h-1,Math.max(0,y))*w+x];
+  for(let y=0;y<h;y++){if(y>0){sum+=tmp[Math.min(h-1,y+rad)*w+x]-tmp[Math.max(0,y-rad-1)*w+x]}out[y*w+x]=sum/(2*rad+1)}}
+ return out;
+}
+
+function render(){
+ if(!sourceData)return;const d=sourceData.data,n=W0=before.width,H0=before.height,N=n*H0;
+ const R=new Float32Array(N),G=new Float32Array(N),B=new Float32Array(N);
+ const ex=val("exposure")/100, hi=val("highlights")/100, sh=val("shadows")/100, wh=val("whites")/100, bl=val("blacks")/100;
+ const warm=val("warmth"), tint=val("tint"), con=val("contrast")/100, sat=val("saturation")/100, vib=val("vibrance")/100;
+ for(let p=0,i=0;p<N;p++,i+=4){
+   let r=d[i],g=d[i+1],b=d[i+2],lum=(.299*r+.587*g+.114*b)/255;
+   const exposure=Math.pow(2,ex*1.25);r*=exposure;g*=exposure;b*=exposure;
+   const shadow=(1-lum), highlight=lum;
+   r+=sh*55*shadow;g+=sh*55*shadow;b+=sh*55*shadow;
+   r+=hi*45*highlight;g+=hi*45*highlight;b+=hi*45*highlight;
+   r+=bl*28;g+=bl*28;b+=bl*28;r+=wh*24;g+=wh*24;b+=wh*24;
+   r+=warm*.38;g+=warm*.12;b-=warm*.30;r+=tint*.25;b+=tint*.25;
+   const c=1+con*.65;r=(r-128)*c+128;g=(g-128)*c+128;b=(b-128)*c+128;
+   const gray=.299*r+.587*g+.114*b;const s=1+sat;
+   r=gray+(r-gray)*s;g=gray+(g-gray)*s;b=gray+(b-gray)*s;
+   const maxc=Math.max(r,g,b), minc=Math.min(r,g,b), spread=maxc-minc;
+   const vs=1+vib*(1-spread/255);r=gray+(r-gray)*vs;g=gray+(g-gray)*vs;b=gray+(b-gray)*vs;
+   R[p]=r;G[p]=g;B[p]=b;
+ }
+ if(val("nrLuma")||val("nrColor")){
+   const Y=new Float32Array(N),Cb=new Float32Array(N),Cr=new Float32Array(N);
+   for(let p=0;p<N;p++){Y[p]=.299*R[p]+.587*G[p]+.114*B[p];Cb[p]=-.1687*R[p]-.3313*G[p]+.5*B[p]+128;Cr[p]=.5*R[p]-.4187*G[p]-.0813*B[p]+128}
+   if(val("nrLuma")){const a=val("nrLuma")/100,q=boxBlur(Y,n,H0,.7+a*3);for(let p=0;p<N;p++)Y[p]=Y[p]*(1-a)+q[p]*a}
+   if(val("nrColor")){const a=val("nrColor")/100,q1=boxBlur(Cb,n,H0,.7+a*4),q2=boxBlur(Cr,n,H0,.7+a*4);for(let p=0;p<N;p++){Cb[p]=Cb[p]*(1-a)+q1[p]*a;Cr[p]=Cr[p]*(1-a)+q2[p]*a}}
+   for(let p=0;p<N;p++){const y=Y[p],cb=Cb[p]-128,cr=Cr[p]-128;R[p]=y+1.402*cr;G[p]=y-.344*cb-.714*cr;B[p]=y+1.772*cb}
+ }
+ const grain=val("grain")/100, vig=val("vignette")/100, fade=val("fade")/100, sharp=val("sharp")/100;
+ let out=ca.createImageData(n,H0),o=out.data,cx=n/2,cy=H0/2,md=Math.hypot(cx,cy);
+ for(let p=0,i=0;p<N;p++,i+=4){
+   const x=p%n,y=Math.floor(p/n),dist=Math.hypot(x-cx,y-cy)/md;
+   const vf=1-dist*dist*vig*.7;let r=R[p]*vf,g=G[p]*vf,b=B[p]*vf;
+   r=r*(1-fade)+fade*18;g=g*(1-fade)+fade*18;b=b*(1-fade)+fade*18;
+   if(grain){const q=(Math.random()-.5)*grain*30;r+=q;g+=q;b+=q}
+   o[i]=clamp(r);o[i+1]=clamp(g);o[i+2]=clamp(b);o[i+3]=d[i+3];
+ }
+ ca.putImageData(out,0,0);
+ if(sharp>0){const Y=new Float32Array(N);for(let p=0,i=0;p<N;p++,i+=4)Y[p]=.299*o[i]+.587*o[i+1]+.114*o[i+2];
+   const blr=boxBlur(Y,n,H0,1.2);for(let p=0,i=0;p<N;p++,i+=4){const detail=Y[p]-blr[p],k=sharp*Math.min(1,Math.abs(detail)/18)*1.2;o[i]=clamp(o[i]+detail*k);o[i+1]=clamp(o[i+1]+detail*k);o[i+2]=clamp(o[i+2]+detail*k)}
+   ca.putImageData(out,0,0)
+ }
+ if(val("bloom")||val("halation"))applyGlow(out,n,H0,val("bloom")/100,val("halation")/100);
+}
+function applyGlow(data,w,h,bloom,hal){
+ if(!bloom&&!hal)return;const d=data.data,N=w*h,R=new Float32Array(N);
+ for(let p=0,i=0;p<N;p++,i+=4)R[p]=Math.max(0,.299*d[i]+.587*d[i+1]+.114*d[i+2]-165);
+ const q=boxBlur(R,w,h,2+bloom*5);
+ for(let p=0,i=0;p<N;p++,i+=4){d[i]=clamp(d[i]+q[p]*(.10+bloom*.32+hal*.14));d[i+1]=clamp(d[i+1]+q[p]*(.08+bloom*.20));d[i+2]=clamp(d[i+2]+q[p]*(.05+bloom*.12-hal*.08))}
+ ca.putImageData(data,0,0);
+}
+function requestRender(){cancelAnimationFrame(raf);raf=requestAnimationFrame(render)}
+
+function setSplit(pct){pct=Math.max(0,Math.min(100,pct));wrap.style.width=pct+"%";handle.style.right=(100-pct)+"%"}
+let drag=false;
+handle.addEventListener("pointerdown",()=>{drag=true;handle.setPointerCapture?.(event.pointerId)});
+window.addEventListener("pointerup",()=>drag=false);
+window.addEventListener("pointermove",e=>{if(drag){const r=compare.getBoundingClientRect();setSplit((e.clientX-r.left)/r.width*100)}})
+compare.addEventListener("pointerdown",e=>{if(e.target!==handle){const r=compare.getBoundingClientRect();setSplit((e.clientX-r.left)/r.width*100)}});
+
+$("holdBtn").addEventListener("pointerdown",()=>{holding=true;wrap.classList.add("hidden");before.style.display="block"});
+$("holdBtn").addEventListener("pointerup",()=>{holding=false;wrap.classList.remove("hidden")});
+
+$("undoBtn").onclick=()=>{if(history.length)restore(history.pop())}
+$("resetBtn").onclick=()=>{pushHistory();const d={exposure:0,highlights:0,shadows:0,whites:0,blacks:0,warmth:0,tint:0,contrast:0,vibrance:0,saturation:0,grain:10,halation:0,bloom:0,fade:0,vignette:15,sharp:20,nrLuma:0,nrColor:0};restore(d)}
+$("randomBtn").onclick=()=>{pushHistory();ids.forEach(id=>{const e=$(id),a=+e.min,b=+e.max;e.value=Math.round(a+Math.random()*(b-a));$(id+"Val").textContent=e.value});uhdActive=false;requestRender()}
+$("autoBtn").onclick=()=>{if(!sourceData)return;pushHistory();let s=sourceData.data, sum=0;for(let i=0;i<s.length;i+=16)sum+=.299*s[i]+.587*s[i+1]+.114*s[i+2];let avg=sum/(s.length/16)/255;setVal("exposure",Math.round((.5-avg)*70));setVal("contrast",Math.round((.5-Math.abs(avg-.5))*-20));setVal("shadows",Math.round((.42-avg)*35));setVal("highlights",Math.round((avg-.58)*-30));setVal("vibrance",12);setVal("sharp",25);render()}
+$("fullscreenBtn").onclick=()=>{compare.requestFullscreen?.()}
+$("zoom100").onclick=()=>{zoom=1;compare.style.overflow="auto";after.style.transform="scale(1)";before.style.transform="scale(1)"}
+$("zoomFit").onclick=()=>{zoom=1;compare.style.overflow="hidden";after.style.transform="scale(1)";before.style.transform="scale(1)"}
+
+function exportCanvas(){
+ if(uhdActive&&uhdCanvas)return uhdCanvas;
+ return after;
+}
+function download(type){
+ const c=exportCanvas();c.toBlob(blob=>{const a=document.createElement("a"),u=URL.createObjectURL(blob);a.href=u;a.download=`ghuroub-${type==="image/png"?"edit":"film"}.${type==="image/png"?"png":"jpg"}`;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)},type,type==="image/jpeg"?.98:undefined)
+}
+$("downloadJpg").onclick=()=>download("image/jpeg");$("downloadPng").onclick=()=>download("image/png");
+
+$("savePreset").onclick=()=>{const name=$("presetName").value.trim()||"My Film";const key="ghuroub_"+Date.now();localStorage.setItem(key,JSON.stringify({name,state:snapshot()}));$("presetName").value="";loadSaved()}
+function loadSaved(){const box=$("savedList");box.innerHTML="";Object.keys(localStorage).filter(k=>k.startsWith("ghuroub_")).forEach(k=>{try{const x=JSON.parse(localStorage.getItem(k));const b=document.createElement("button");b.textContent=x.name;b.onclick=()=>restore(x.state);box.appendChild(b)}catch{}})}
+loadSaved();
+
+$("uhdBtn").onclick=async()=>{
+ if(!sourceData)return;$("uhdBtn").disabled=true;$("uhdBtn").textContent="جارٍ التحسين...";
+ try{
+   const full=document.createElement("canvas"),fw=Math.min(W*2,8192),fh=Math.round(H*(fw/W));full.width=fw;full.height=fh;
+   const x=full.getContext("2d");x.imageSmoothingQuality="high";x.drawImage(after,0,0,fw,fh);
+   const d=x.getImageData(0,0,fw,fh);const Y=new Float32Array(fw*fh);
+   for(let i=0,p=0;i<d.data.length;i+=4,p++)Y[p]=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
+   const q=boxBlur(Y,fw,fh,1.4);for(let i=0,p=0;i<d.data.length;i+=4,p++){const detail=Y[p]-q[p],k=Math.min(1,Math.abs(detail)/20)*.55;for(let c=0;c<3;c++)d.data[i+c]=clamp(d.data[i+c]+detail*k)}
+   x.putImageData(d,0,0);uhdCanvas=full;uhdActive=true;$("uhdBtn").textContent="✓ UHD مفعّل";
+ }catch(e){showError("الصورة كبيرة جداً على ذاكرة المتصفح.");$("uhdBtn").textContent="✦ تحسين UHD"}
+ $("uhdBtn").disabled=false
+}
+</script>
+</body>
+</html>
